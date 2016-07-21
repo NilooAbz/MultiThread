@@ -1,9 +1,10 @@
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by Niloofar on 7/20/2016.
  */
-public class Transaction {
+public class Transaction implements Serializable{
 
     private Integer transactionId;
     private String transactionType;

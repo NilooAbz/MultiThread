@@ -29,62 +29,54 @@ public class XMLParser {
         System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 
         NodeList nList = doc.getElementsByTagName("terminal");
-        nList.item(0);
+        Node terminalNode = nList.item(0);
 
         Terminal terminal = new Terminal();
 
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-            Node nNode = nList.item(temp);
-            System.out.println("\nCurrent Element :" + nNode.getNodeName());
-            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) nNode;
-                Integer id = Integer.parseInt(eElement.getAttribute("id"));
-                System.out.println(id);
-                String type = eElement.getAttribute("type");
-                System.out.println(type);
 
-                terminal.setTerminalId(id);
-                terminal.setTerminalType(type);
-            }
+        System.out.println("\nCurrent Element :" + terminalNode.getNodeName());
+        if (terminalNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element eElement = (Element) terminalNode;
+            Integer id = Integer.parseInt(eElement.getAttribute("id"));
+            System.out.println(id);
+            String type = eElement.getAttribute("type");
+            System.out.println(type);
+
+            terminal.setTerminalId(id);
+            terminal.setTerminalType(type);
         }
 
-        NodeList serverList = doc.getElementsByTagName("server");
-        nList.item(0);
 
-        for (int temp = 0; temp < serverList.getLength(); temp++) {
-            Node serverNode = serverList.item(temp);
-            System.out.println("\nCurrent Element :" + serverNode.getNodeName());
-            if (serverNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) serverNode;
-                String ip = eElement.getAttribute("ip");
-                System.out.println(ip);
-                Integer port = Integer.parseInt(eElement.getAttribute("port"));
-                System.out.println(port);
+        Node serverElement = doc.getElementsByTagName("server").item(0);
 
-                terminal.setIp(ip);
-                terminal.setPort(port);
-            }
+        System.out.println("\nCurrent Element :" + serverElement.getNodeName());
+        if (serverElement.getNodeType() == Node.ELEMENT_NODE) {
+            Element eElement = (Element) serverElement;
+            String ip = eElement.getAttribute("ip");
+            System.out.println(ip);
+            Integer port = Integer.parseInt(eElement.getAttribute("port"));
+            System.out.println(port);
+
+            terminal.setServerIP(ip);
+            terminal.setServerPort(port);
         }
 
-        NodeList outLogList = doc.getElementsByTagName("outLog");
-        nList.item(0);
+        Node outLogElement = doc.getElementsByTagName("outLog").item(0);
 
-        for (int temp = 0; temp < outLogList.getLength(); temp++) {
-            Node outLogNode = outLogList.item(temp);
-            System.out.println("\nCurrent Element :" + outLogNode.getNodeName());
-            if (outLogNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) outLogNode;
-                String path =eElement.getAttribute("path");
-                System.out.println(path);
 
-                terminal.setPath(path);
-            }
+        System.out.println("\nCurrent Element :" + outLogElement.getNodeName());
+        if (outLogElement.getNodeType() == Node.ELEMENT_NODE) {
+            Element eElement = (Element) outLogElement;
+            String path = eElement.getAttribute("path");
+            System.out.println(path);
+
+            terminal.setPath(path);
         }
+
 
         NodeList transactionNodeList = doc.getElementsByTagName("transaction");
-        nList.item(0);
 
-        List<Transaction> transactionList = new ArrayList<Transaction>();
+        List<Transaction> transactions = new ArrayList<Transaction>();
         for (int temp = 0; temp < transactionNodeList.getLength(); temp++) {
             Node transactionNode = transactionNodeList.item(temp);
             System.out.println("\nCurrent Element :" + transactionNode.getNodeName());
@@ -106,9 +98,10 @@ public class XMLParser {
                 transaction.setTransactionAmount(amount);
                 transaction.setDeposit(deposit);
 
-                transactionList.add(transaction);
+                transactions.add(transaction);
             }
         }
+        terminal.setTransactions(transactions);
         return terminal;
     }
 }

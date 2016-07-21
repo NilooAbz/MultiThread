@@ -3,7 +3,7 @@ import java.math.BigDecimal;
 /**
  * Created by Niloofar on 7/20/2016.
  */
-public class Deposits {
+public class Deposit {
 
     private String customerName;
     private Integer id;
@@ -41,6 +41,14 @@ public class Deposits {
 
     public void setUpperBound(BigDecimal upperBound) {
         this.upperBound = upperBound;
+    }
+
+    public void withdraw(BigDecimal draw) {
+        initialBalance = initialBalance.subtract(draw);
+    }
+
+    public void depoit(BigDecimal draw) {
+        initialBalance = initialBalance.subtract(draw);
     }
 
 }

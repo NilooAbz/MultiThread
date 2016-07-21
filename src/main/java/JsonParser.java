@@ -31,11 +31,11 @@ public class JsonParser {
             server.setPort(port);
 
             JSONArray jsonArrayDeposits = (JSONArray) jsonObject.get("deposits");
-            List<Deposits> deposits = new ArrayList<Deposits>();
+            List<Deposit> deposits = new ArrayList<Deposit>();
 
             for (int i = 0; i < jsonArrayDeposits.size() ; i++) {
 
-                Deposits deposit = new Deposits();
+                Deposit deposit = new Deposit();
                 System.out.println("The " + i + " element of jsonArray array " + jsonArrayDeposits.get(i));
                 JSONObject innerObject = (JSONObject) jsonArrayDeposits.get(i);
                 String customerName = (String) innerObject.get("customer");

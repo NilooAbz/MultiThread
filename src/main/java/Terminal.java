@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * Created by Niloofar on 7/20/2016.
@@ -13,16 +14,24 @@ public class Terminal {
 
     private Integer terminalId;
     private String terminalType;
-    private String ip;
-    private Integer port;
+    private String serverIP;
+    private Integer serverPort;
     private String path;
-    Transaction transaction;
+    private List<Transaction> transactions;
 
     Socket client;
     ObjectInputStream inFromServer;
     ObjectOutputStream outToServer;
     Terminal(){}
 
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
 
     public Integer getTerminalId() {
         return terminalId;
@@ -40,20 +49,20 @@ public class Terminal {
         this.terminalType = terminalType;
     }
 
-    public String getIp() {
-        return ip;
+    public String getServerIP() {
+        return serverIP;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setServerIP(String serverIP) {
+        this.serverIP = serverIP;
     }
 
-    public Integer getPort() {
-        return port;
+    public Integer getServerPort() {
+        return serverPort;
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setServerPort(Integer serverPort) {
+        this.serverPort = serverPort;
     }
 
     public String getPath() {
@@ -66,13 +75,18 @@ public class Terminal {
     void run(){
 
         try {
-            client = new Socket(getIp(),getPort());
+            client = new Socket(getServerIP(), getServerPort());
             inFromServer = new ObjectInputStream(client.getInputStream());
             outToServer = new ObjectOutputStream(client.getOutputStream());
             outToServer.flush();
             try {
-                outToServer.writeObject("hura vasl shodam");
-                System.out.println("server>" + inFromServer.readObject());
+
+                for (Transaction transaction : transactions) {
+                    outToServer.writeObject(transaction);
+                    System.out.println("server>" + inFromServer.readObject());
+                }
+                inFromServer.close();
+                outToServer.close();
                 client.close();
 
             } catch (ClassNotFoundException e) {
