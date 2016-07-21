@@ -1,3 +1,11 @@
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
 /**
  * Created by Niloofar on 7/20/2016.
  */
@@ -6,9 +14,14 @@ public class Terminal {
     private Integer terminalId;
     private String terminalType;
     private String ip;
-    private Long port;
+    private Integer port;
     private String path;
     Transaction transaction;
+
+    Socket client;
+    ObjectInputStream inFromServer;
+    ObjectOutputStream outToServer;
+    Terminal(){}
 
 
     public Integer getTerminalId() {
@@ -35,11 +48,11 @@ public class Terminal {
         this.ip = ip;
     }
 
-    public Long getPort() {
+    public Integer getPort() {
         return port;
     }
 
-    public void setPort(Long port) {
+    public void setPort(Integer port) {
         this.port = port;
     }
 
@@ -47,7 +60,32 @@ public class Terminal {
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setPath(String path) {this.path = path;}
+
+    //client socket
+    void run(){
+
+        try {
+            client = new Socket(getIp(),getPort());
+            inFromServer = new ObjectInputStream(client.getInputStream());
+            outToServer = new ObjectOutputStream(client.getOutputStream());
+            outToServer.flush();
+            try {
+                outToServer.writeObject("hura vasl shodam");
+                System.out.println("server>" + inFromServer.readObject());
+                client.close();
+
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
+
+        Terminal terminal = XMLParser.Parse();
+        terminal.run();
     }
 }

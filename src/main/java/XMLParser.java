@@ -10,13 +10,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Niloofar on 7/20/2016.
  */
 public class XMLParser {
 
-    public XMLParser() throws ParserConfigurationException, IOException, SAXException {
+    public static Terminal Parse() throws ParserConfigurationException, IOException, SAXException {
         File file = new File("terminal.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
@@ -36,7 +38,7 @@ public class XMLParser {
             System.out.println("\nCurrent Element :" + nNode.getNodeName());
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
-                Integer id = Integer.valueOf(eElement.getAttribute("id"));
+                Integer id = Integer.parseInt(eElement.getAttribute("id"));
                 System.out.println(id);
                 String type = eElement.getAttribute("type");
                 System.out.println(type);
@@ -54,9 +56,9 @@ public class XMLParser {
             System.out.println("\nCurrent Element :" + serverNode.getNodeName());
             if (serverNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) serverNode;
-                String ip =eElement.getAttribute("ip");
+                String ip = eElement.getAttribute("ip");
                 System.out.println(ip);
-                Long port = Long.valueOf(eElement.getAttribute("port"));
+                Integer port = Integer.parseInt(eElement.getAttribute("port"));
                 System.out.println(port);
 
                 terminal.setIp(ip);
@@ -79,15 +81,16 @@ public class XMLParser {
             }
         }
 
-        NodeList transactionList = doc.getElementsByTagName("transaction");
+        NodeList transactionNodeList = doc.getElementsByTagName("transaction");
         nList.item(0);
 
-        for (int temp = 0; temp < transactionList.getLength(); temp++) {
-            Node transactionNode = transactionList.item(temp);
+        List<Transaction> transactionList = new ArrayList<Transaction>();
+        for (int temp = 0; temp < transactionNodeList.getLength(); temp++) {
+            Node transactionNode = transactionNodeList.item(temp);
             System.out.println("\nCurrent Element :" + transactionNode.getNodeName());
             if (transactionNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) transactionNode;
-                Integer id = Integer.valueOf(eElement.getAttribute("id"));
+                Integer id = Integer.parseInt(eElement.getAttribute("id"));
                 System.out.println(id);
                 String type = eElement.getAttribute("type");
                 System.out.println(type);
@@ -102,7 +105,10 @@ public class XMLParser {
                 transaction.setTransactionType(type);
                 transaction.setTransactionAmount(amount);
                 transaction.setDeposit(deposit);
+
+                transactionList.add(transaction);
             }
         }
+        return terminal;
     }
 }
