@@ -19,9 +19,6 @@ public class Terminal {
     private String path;
     private List<Transaction> transactions;
 
-    Socket client;
-    ObjectInputStream inFromServer;
-    ObjectOutputStream outToServer;
     Terminal(){}
 
 
@@ -75,15 +72,15 @@ public class Terminal {
     void run(){
 
         try {
-            client = new Socket(getServerIP(), getServerPort());
-            inFromServer = new ObjectInputStream(client.getInputStream());
-            outToServer = new ObjectOutputStream(client.getOutputStream());
+            Socket client = new Socket(getServerIP(), getServerPort());
+            ObjectInputStream inFromServer = new ObjectInputStream(client.getInputStream());
+            ObjectOutputStream outToServer = new ObjectOutputStream(client.getOutputStream());
             outToServer.flush();
             try {
-
                 for (Transaction transaction : transactions) {
                     outToServer.writeObject(transaction);
                     System.out.println("server>" + inFromServer.readObject());
+
                 }
                 inFromServer.close();
                 outToServer.close();

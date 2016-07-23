@@ -16,9 +16,9 @@ import java.util.List;
 /**
  * Created by Niloofar on 7/20/2016.
  */
-public class XMLParser {
+class XMLParser {
 
-    public static Terminal Parse() throws ParserConfigurationException, IOException, SAXException {
+    static Terminal Parse() throws ParserConfigurationException, IOException, SAXException {
         File file = new File("terminal.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
@@ -28,18 +28,17 @@ public class XMLParser {
 
         System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 
-        NodeList nList = doc.getElementsByTagName("terminal");
-        Node terminalNode = nList.item(0);
+        NodeList terminalNodeList = doc.getElementsByTagName("terminal");
+        Node terminalNode = terminalNodeList.item(0);
 
         Terminal terminal = new Terminal();
 
-
         System.out.println("\nCurrent Element :" + terminalNode.getNodeName());
         if (terminalNode.getNodeType() == Node.ELEMENT_NODE) {
-            Element eElement = (Element) terminalNode;
-            Integer id = Integer.parseInt(eElement.getAttribute("id"));
+            Element terminalElement = (Element) terminalNode;
+            Integer id = Integer.parseInt(terminalElement.getAttribute("id"));
             System.out.println(id);
-            String type = eElement.getAttribute("type");
+            String type = terminalElement.getAttribute("type");
             System.out.println(type);
 
             terminal.setTerminalId(id);
@@ -47,27 +46,26 @@ public class XMLParser {
         }
 
 
-        Node serverElement = doc.getElementsByTagName("server").item(0);
+        Node serverNode = doc.getElementsByTagName("server").item(0);
 
-        System.out.println("\nCurrent Element :" + serverElement.getNodeName());
-        if (serverElement.getNodeType() == Node.ELEMENT_NODE) {
-            Element eElement = (Element) serverElement;
-            String ip = eElement.getAttribute("ip");
+        System.out.println("\nCurrent Element :" + serverNode.getNodeName());
+        if (serverNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element serverElement = (Element) serverNode;
+            String ip = serverElement.getAttribute("ip");
             System.out.println(ip);
-            Integer port = Integer.parseInt(eElement.getAttribute("port"));
+            Integer port = Integer.parseInt(serverElement.getAttribute("port"));
             System.out.println(port);
 
             terminal.setServerIP(ip);
             terminal.setServerPort(port);
         }
 
-        Node outLogElement = doc.getElementsByTagName("outLog").item(0);
+        Node outLogNode = doc.getElementsByTagName("outLog").item(0);
 
-
-        System.out.println("\nCurrent Element :" + outLogElement.getNodeName());
-        if (outLogElement.getNodeType() == Node.ELEMENT_NODE) {
-            Element eElement = (Element) outLogElement;
-            String path = eElement.getAttribute("path");
+        System.out.println("\nCurrent Element :" + outLogNode.getNodeName());
+        if (outLogNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element outLogElement = (Element) outLogNode;
+            String path = outLogElement.getAttribute("path");
             System.out.println(path);
 
             terminal.setPath(path);
@@ -81,14 +79,14 @@ public class XMLParser {
             Node transactionNode = transactionNodeList.item(temp);
             System.out.println("\nCurrent Element :" + transactionNode.getNodeName());
             if (transactionNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) transactionNode;
-                Integer id = Integer.parseInt(eElement.getAttribute("id"));
+                Element transactionElement = (Element) transactionNode;
+                Integer id = Integer.parseInt(transactionElement.getAttribute("id"));
                 System.out.println(id);
-                String type = eElement.getAttribute("type");
+                String type = transactionElement.getAttribute("type");
                 System.out.println(type);
-                BigDecimal amount = new BigDecimal(eElement.getAttribute("amount"));
+                BigDecimal amount = new BigDecimal(transactionElement.getAttribute("amount"));
                 System.out.println(amount);
-                String deposit = eElement.getAttribute("deposit");
+                String deposit = transactionElement.getAttribute("deposit");
                 System.out.println(deposit);
 
                 Transaction transaction = new Transaction();

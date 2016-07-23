@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * Created by Niloofar on 7/20/2016.
  */
-public class JsonParser {
+class JsonParser {
 
-    public static Server parse() {
+    static Server parse() {
 
         JSONParser jsonParser = new JSONParser();
         Server server = new Server();
@@ -26,7 +26,6 @@ public class JsonParser {
 
             Integer port = Integer.parseInt(jsonObject.get("port").toString());
             System.out.println("The Port number is:" + port);
-
 
             server.setPort(port);
 
@@ -39,7 +38,7 @@ public class JsonParser {
                 System.out.println("The " + i + " element of jsonArray array " + jsonArrayDeposits.get(i));
                 JSONObject innerObject = (JSONObject) jsonArrayDeposits.get(i);
                 String customerName = (String) innerObject.get("customer");
-                Integer id =Integer.parseInt( innerObject.get("id").toString());
+                String id = innerObject.get("id").toString();
                 BigDecimal initialBaance = new BigDecimal(innerObject.get("initialBalance").toString());
                 BigDecimal upperBound = new BigDecimal( innerObject.get("upperBound").toString());
 
@@ -54,6 +53,7 @@ public class JsonParser {
             System.out.println("The outLog: " + outlog);
 
             server.setOutLog(outlog);
+            server.setDeposits(deposits);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

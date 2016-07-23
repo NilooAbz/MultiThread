@@ -1,9 +1,7 @@
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * Created by Niloofar on 7/20/2016.
@@ -12,29 +10,11 @@ public class Server extends Thread {
 
     private Integer port;
     private String outLog;
-    private Deposit deposit;
+    private List<Deposit> deposits;
     private Socket connection;
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public static void main(String[] args) throws IOException {
-
-        Server server = JsonParser.parse();
-        //multi thread
-
-        ServerSocket serverSocket = new ServerSocket(server.getPort());
-        System.out.println("Waiting for connection");
-        Socket socket = serverSocket.accept();
-        server.setConnection(socket);
-        server.run();
-
-        //single thread
-
-        /*while(true){
-            server.run();
-        }*/
-
-    }
 
     public Socket getConnection() {
         return connection;
@@ -60,21 +40,11 @@ public class Server extends Thread {
         this.outLog = outLog;
     }
 
-    public Deposit getDeposit() {
-        return deposit;
-    }
 
-    public void setDeposit(Deposit deposit) {
-        this.deposit = deposit;
-    }
+    public void setDeposits(List<Deposit> deposits) {this.deposits = deposits;}
 
     public void run() {
         try {
-            //single thread
-            /*ServerSocket serverSocket = new ServerSocket(getServerPort());
-            System.out.println("Waiting for connection");
-            connection = serverSocket.accept();
-*/
             System.out.println("Connection received from " + connection.getInetAddress().getHostName());
             out = new ObjectOutputStream(connection.getOutputStream());
             out.flush();
@@ -85,24 +55,58 @@ public class Server extends Thread {
                     Transaction transaction = (Transaction) in.readObject();
 
                     System.out.println("client>" + transaction.getTransactionType());
-                    out.writeObject("Ok");
+                    out.writeObject("the type is: " + transaction.getTransactionType());
+
+                    System.out.println("client>" + transaction.getDeposit());
+                    out.writeObject("deposit of transaction is: " + transaction.getDeposit());
+
+                    System.out.println("client>" + transaction.getTransactionAmount());
+                    out.writeObject("transaction amount is: " + transaction.getTransactionAmount());
+
+                    System.out.println("client>" + transaction.getTransactionId());
+                    out.writeObject("transaction id is: " + transaction.getTransactionId());
+
+                    for (Deposit deposit: deposits) {
+                        if(transaction.getDeposit().equals(deposit.getId())){
+                            if (transaction.getTransactionType().equals("deposit")){
+                                deposit.depositVerb(transaction.getTransactionAmount());
+                            }//deposit = withdraw
+                            else {
+                                deposit.withdraw(transaction.getTransactionAmount());
+                            }
+                        }else {
+                            System.out.println("deposit ID's is not matched");
+                        }
+                        //System.out.println("new intialBalance for depositId: " + deposit.getId() + " = " + deposit.depositVerb(transaction.getTransactionAmount()));
+                    }
 
                     if (transaction.getTransactionType().equals("")) {
                         break;
                     }
-
+                //always read the input until reached to the end of the file or stream , so close it with this exception:
                 } catch (EOFException e) {
 
                     in.close();
                     out.close();
                     connection.close();
                     break;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
 
+            /*try (ObjectInputStream in = new ObjectInputStream(connection.getInputStream())){
+                System.out.println("wait for data");
+                Transaction transaction = (Transaction) in.readObject();
+
+                System.out.println("client>" + transaction.getTransactionType());
+                out.writeObject("get the type");
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }*/
+
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -114,4 +118,19 @@ public class Server extends Thread {
             }
         }
     }
+
+    public static void main(String[] args) throws IOException {
+
+        Server server = JsonParser.parse();
+
+        ServerSocket serverSocket = new ServerSocket(server.getPort());
+        serverSocket.setSoTimeout(10000);
+        System.out.println("Waiting for connection");
+        Socket socket = serverSocket.accept();
+        server.setConnection(socket);
+        server.run();
+
+    }
+
+
 }
