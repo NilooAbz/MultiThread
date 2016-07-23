@@ -1,3 +1,7 @@
+import exceptions.DepositExistanceException;
+import exceptions.UpperBoundException;
+import exceptions.initialBalanceException;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -6,7 +10,7 @@ import java.util.List;
 /**
  * Created by Niloofar on 7/20/2016.
  */
-public class Server extends Thread {
+public class Server extends Thread implements Serializable {
 
     private Integer port;
     private String outLog;
@@ -15,6 +19,18 @@ public class Server extends Thread {
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
+    public static void main(String[] args) throws IOException {
+
+        Server server = JsonParser.parse();
+
+        ServerSocket serverSocket = new ServerSocket(server.getPort());
+        serverSocket.setSoTimeout(100000);
+        System.out.println("Waiting for connection");
+        Socket socket = serverSocket.accept();
+        server.setConnection(socket);
+        server.run();
+
+    }
 
     public Socket getConnection() {
         return connection;
@@ -40,8 +56,9 @@ public class Server extends Thread {
         this.outLog = outLog;
     }
 
-
-    public void setDeposits(List<Deposit> deposits) {this.deposits = deposits;}
+    public void setDeposits(List<Deposit> deposits) {
+        this.deposits = deposits;
+    }
 
     public void run() {
         try {
@@ -55,35 +72,51 @@ public class Server extends Thread {
                     Transaction transaction = (Transaction) in.readObject();
 
                     System.out.println("client>" + transaction.getTransactionType());
-                    out.writeObject("the type is: " + transaction.getTransactionType());
+//                    out.writeObject("the type is: " + transaction.getTransactionType());
 
                     System.out.println("client>" + transaction.getDeposit());
-                    out.writeObject("deposit of transaction is: " + transaction.getDeposit());
+//                    out.writeObject("deposit of transaction is: " + transaction.getDeposit());
 
                     System.out.println("client>" + transaction.getTransactionAmount());
-                    out.writeObject("transaction amount is: " + transaction.getTransactionAmount());
+//                    out.writeObject("transaction amount is: " + transaction.getTransactionAmount());
 
                     System.out.println("client>" + transaction.getTransactionId());
-                    out.writeObject("transaction id is: " + transaction.getTransactionId());
+//                    out.writeObject("transaction id is: " + transaction.getTransactionId());
 
-                    for (Deposit deposit: deposits) {
-                        if(transaction.getDeposit().equals(deposit.getId())){
-                            if (transaction.getTransactionType().equals("deposit")){
-                                deposit.depositVerb(transaction.getTransactionAmount());
-                            }//deposit = withdraw
-                            else {
-                                deposit.withdraw(transaction.getTransactionAmount());
+                    boolean findDeposit = false;
+                    try{
+
+                        for (Deposit deposit : deposits) {
+                            if (transaction.getDeposit().equals(deposit.getId())) {
+                                if (transaction.getTransactionType().equals("deposit")) {
+                                    deposit.depositVerb(transaction.getTransactionAmount());
+                                }//deposit = withdraw
+                                else {
+                                    deposit.withdraw(transaction.getTransactionAmount());
+                                }
+                                findDeposit = true;
+                                out.writeObject("Transaction done");
+                                break;
                             }
-                        }else {
-                            System.out.println("deposit ID's is not matched");
+                            //System.out.println("new intialBalance for depositId: " + deposit.getId() + " = " + deposit.depositVerb(transaction.getTransactionAmount()));
+
                         }
-                        //System.out.println("new intialBalance for depositId: " + deposit.getId() + " = " + deposit.depositVerb(transaction.getTransactionAmount()));
+                        if (!findDeposit) {
+                            System.out.println("deposit ID's is not matched");
+
+                        }
+                    }catch (DepositExistanceException e){
+                        out.writeObject(e.getMessage());
+                    }catch (UpperBoundException e) {
+                        out.writeObject(e.getMessage());
+                    } catch (initialBalanceException e) {
+                        out.writeObject(e.getMessage());
                     }
 
                     if (transaction.getTransactionType().equals("")) {
                         break;
                     }
-                //always read the input until reached to the end of the file or stream , so close it with this exception:
+                    //always read the input until reached to the end of the file or stream , so close it with this exception:
                 } catch (EOFException e) {
 
                     in.close();
@@ -117,19 +150,6 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        Server server = JsonParser.parse();
-
-        ServerSocket serverSocket = new ServerSocket(server.getPort());
-        serverSocket.setSoTimeout(10000);
-        System.out.println("Waiting for connection");
-        Socket socket = serverSocket.accept();
-        server.setConnection(socket);
-        server.run();
-
     }
 
 

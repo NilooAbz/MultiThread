@@ -4,13 +4,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.List;
 
 /**
  * Created by Niloofar on 7/20/2016.
  */
-public class Terminal {
+public class Terminal implements Serializable{
 
     private Integer terminalId;
     private String terminalType;
