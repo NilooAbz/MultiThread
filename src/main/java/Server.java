@@ -99,11 +99,7 @@ public class Server extends Thread implements Serializable {
                             System.out.println("deposit ID's is not matched");
 
                         }
-                    }catch (DepositNotExistException e){
-                        out.writeObject(e.getMessage());
-                    }catch (InitialBalancePassedUpperBoundException e) {
-                        out.writeObject(e.getMessage());
-                    } catch (InitialBalanceBecameZeroException e) {
+                    }catch (DepositNotExistException | InitialBalancePassedUpperBoundException | InitialBalanceBecameZeroException e){
                         out.writeObject(e.getMessage());
                     }
 
