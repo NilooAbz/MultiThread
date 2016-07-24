@@ -1,6 +1,6 @@
-import exceptions.DepositExistanceException;
-import exceptions.UpperBoundException;
-import exceptions.initialBalanceException;
+import exceptions.DepositNotExistException;
+import exceptions.InitialBalancePassedUpperBoundException;
+import exceptions.InitialBalanceBecameZeroException;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -72,16 +72,12 @@ public class Server extends Thread implements Serializable {
                     Transaction transaction = (Transaction) in.readObject();
 
                     System.out.println("client>" + transaction.getTransactionType());
-//                    out.writeObject("the type is: " + transaction.getTransactionType());
 
                     System.out.println("client>" + transaction.getDeposit());
-//                    out.writeObject("deposit of transaction is: " + transaction.getDeposit());
 
                     System.out.println("client>" + transaction.getTransactionAmount());
-//                    out.writeObject("transaction amount is: " + transaction.getTransactionAmount());
 
                     System.out.println("client>" + transaction.getTransactionId());
-//                    out.writeObject("transaction id is: " + transaction.getTransactionId());
 
                     boolean findDeposit = false;
                     try{
@@ -98,18 +94,16 @@ public class Server extends Thread implements Serializable {
                                 out.writeObject("Transaction done");
                                 break;
                             }
-                            //System.out.println("new intialBalance for depositId: " + deposit.getId() + " = " + deposit.depositVerb(transaction.getTransactionAmount()));
-
                         }
                         if (!findDeposit) {
                             System.out.println("deposit ID's is not matched");
 
                         }
-                    }catch (DepositExistanceException e){
+                    }catch (DepositNotExistException e){
                         out.writeObject(e.getMessage());
-                    }catch (UpperBoundException e) {
+                    }catch (InitialBalancePassedUpperBoundException e) {
                         out.writeObject(e.getMessage());
-                    } catch (initialBalanceException e) {
+                    } catch (InitialBalanceBecameZeroException e) {
                         out.writeObject(e.getMessage());
                     }
 

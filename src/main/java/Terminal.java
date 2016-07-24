@@ -81,7 +81,6 @@ public class Terminal implements Serializable{
                 for (Transaction transaction : transactions) {
                     outToServer.writeObject(transaction);
                     System.out.println("server>" + inFromServer.readObject());
-
                 }
                 inFromServer.close();
                 outToServer.close();

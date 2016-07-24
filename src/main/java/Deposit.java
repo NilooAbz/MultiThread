@@ -1,6 +1,6 @@
-import exceptions.DepositExistanceException;
-import exceptions.UpperBoundException;
-import exceptions.initialBalanceException;
+import exceptions.DepositNotExistException;
+import exceptions.InitialBalancePassedUpperBoundException;
+import exceptions.InitialBalanceBecameZeroException;
 
 import java.math.BigDecimal;
 
@@ -47,30 +47,23 @@ public class Deposit {
         this.upperBound = upperBound;
     }
 
-    public void withdraw(BigDecimal draw) throws DepositExistanceException, initialBalanceException {
+    public void withdraw(BigDecimal draw) throws DepositNotExistException, InitialBalanceBecameZeroException {
         int compareValue = initialBalance.compareTo(draw);
         int upperBoundPossitive = upperBound.compareTo(BigDecimal.ZERO);
         //  initialBalance>=draw  &&  upperBound>0
         if ((compareValue >= 0) && (upperBoundPossitive > 0)){
             initialBalance = initialBalance.subtract(draw);
-        }/*//upperBound<0
-        else if (upperBoundPossitive <= 0){
-            System.out.println("The deposit is closed");
-        }//initialBalance<draw
-        else{
-            System.out.println("initialBalance is not enough");
-        }*/
+        }
         if (upperBoundPossitive <= 0){
-            throw new DepositExistanceException("The deposit is closed");
-
+            throw new DepositNotExistException("The deposit is closed");
         }
         if(compareValue < 0){
-            throw new initialBalanceException("Your initialBalance is not enough");
+            throw new InitialBalanceBecameZeroException("Your initialBalance is not enough");
         }
     }
 
 
-    public BigDecimal depositVerb(BigDecimal draw) throws DepositExistanceException, UpperBoundException {
+    public BigDecimal depositVerb(BigDecimal draw) throws DepositNotExistException, InitialBalancePassedUpperBoundException {
 
         int compareInitialBalanceToUpperBound = initialBalance.add(draw).compareTo(upperBound);
         int upperBoundPossitive = upperBound.compareTo(BigDecimal.ZERO);
@@ -79,19 +72,12 @@ public class Deposit {
             System.out.println(draw);
             initialBalance = initialBalance.add(draw);
             System.out.println(initialBalance);
-        }/*//upperBound<0
-        else if (upperBoundPossitive <= 0){
-            System.out.println("The deposit is closed");
-        }//initialBalance>upperBound
-        else{
-            System.out.println("UpperBound Warning");
-        }*/
-
+        }
         if(upperBoundPossitive <= 0){
-            throw new DepositExistanceException("The diposit is closed");
+            throw new DepositNotExistException("The diposit is closed");
         }
         if (compareInitialBalanceToUpperBound > 0 ){
-            throw new UpperBoundException("You pass the upperBound");
+            throw new InitialBalancePassedUpperBoundException("You pass the upperBound");
         }
         return draw;
     }
