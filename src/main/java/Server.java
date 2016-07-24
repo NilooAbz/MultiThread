@@ -10,62 +10,50 @@ import java.util.List;
 /**
  * Created by Niloofar on 7/20/2016.
  */
-public class Server extends Thread implements Serializable {
+public class Server implements Serializable ,Runnable {
 
-    private Integer port;
-    private String outLog;
-    private List<Deposit> deposits;
-    private Socket connection;
+    private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private ServerData serverData;
+
+
+    public Server(ServerData serverData, Socket socket) {
+        this.serverData = serverData;
+        this.socket = socket;
+    }
+
+    public Server() {
+    }
 
     public static void main(String[] args) throws IOException {
 
-        Server server = JsonParser.parse();
+        ServerData serverData = JsonParser.parse();
 
-        ServerSocket serverSocket = new ServerSocket(server.getPort());
-        serverSocket.setSoTimeout(100000);
-        System.out.println("Waiting for connection");
-        Socket socket = serverSocket.accept();
-        server.setConnection(socket);
-        server.run();
-
+        ServerSocket serverSocket = new ServerSocket(serverData.getPort());
+        while(true) {
+            System.out.println("Waiting for socket");
+            Socket socket = serverSocket.accept();
+//            server.setSocket(socket);
+            new Thread( new Server(serverData , socket)).start();
+//            server.run();
+        }
     }
 
-    public Socket getConnection() {
-        return connection;
+    public Socket getSocket() {
+        return socket;
     }
 
-    public void setConnection(Socket connection) {
-        this.connection = connection;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public String getOutLog() {
-        return outLog;
-    }
-
-    public void setOutLog(String outLog) {
-        this.outLog = outLog;
-    }
-
-    public void setDeposits(List<Deposit> deposits) {
-        this.deposits = deposits;
+    public void setSocket(Socket socket) {
+        this.socket = socket;
     }
 
     public void run() {
         try {
-            System.out.println("Connection received from " + connection.getInetAddress().getHostName());
-            out = new ObjectOutputStream(connection.getOutputStream());
+            System.out.println("Connection received from " + socket.getInetAddress().getHostName());
+            out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
-            in = new ObjectInputStream(connection.getInputStream());
+            in = new ObjectInputStream(socket.getInputStream());
             while (true) {
                 try {
                     System.out.println("wait for data");
@@ -82,7 +70,7 @@ public class Server extends Thread implements Serializable {
                     boolean findDeposit = false;
                     try{
 
-                        for (Deposit deposit : deposits) {
+                        for (Deposit deposit : serverData.getDeposits()) {
                             if (transaction.getDeposit().equals(deposit.getId())) {
                                 if (transaction.getTransactionType().equals("deposit")) {
                                     deposit.depositVerb(transaction.getTransactionAmount());
@@ -111,14 +99,14 @@ public class Server extends Thread implements Serializable {
 
                     in.close();
                     out.close();
-                    connection.close();
+                    socket.close();
                     break;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             }
 
-            /*try (ObjectInputStream in = new ObjectInputStream(connection.getInputStream())){
+            /*try (ObjectInputStream in = new ObjectInputStream(socket.getInputStream())){
                 System.out.println("wait for data");
                 Transaction transaction = (Transaction) in.readObject();
 
@@ -135,7 +123,7 @@ public class Server extends Thread implements Serializable {
             try {
                 in.close();
                 out.close();
-                connection.close();
+                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

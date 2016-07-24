@@ -96,7 +96,8 @@ public class Terminal implements Serializable{
 
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
 
-        Terminal terminal = XMLParser.Parse();
+        String filePath =  "terminal2.xml";
+        Terminal terminal = XMLParser.Parse(filePath);
         terminal.run();
     }
 }

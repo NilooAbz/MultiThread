@@ -15,10 +15,10 @@ import java.util.List;
  */
 class JsonParser {
 
-    static Server parse() {
+    static ServerData parse() {
 
         JSONParser jsonParser = new JSONParser();
-        Server server = new Server();
+        ServerData serverData = new ServerData();
 
         try {
             FileReader reader = new FileReader("core.json");
@@ -27,7 +27,7 @@ class JsonParser {
             Integer port = Integer.parseInt(jsonObject.get("port").toString());
             System.out.println("The Port number is:" + port);
 
-            server.setPort(port);
+            serverData.setPort(port);
 
             JSONArray jsonArrayDeposits = (JSONArray) jsonObject.get("deposits");
             List<Deposit> deposits = new ArrayList<Deposit>();
@@ -52,8 +52,8 @@ class JsonParser {
             String outlog = (String) jsonObject.get("outLog");
             System.out.println("The outLog: " + outlog);
 
-            server.setOutLog(outlog);
-            server.setDeposits(deposits);
+            serverData.setOutLog(outlog);
+            serverData.setDeposits(deposits);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -62,6 +62,6 @@ class JsonParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return server;
+        return serverData;
     }
 }

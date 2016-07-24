@@ -18,8 +18,8 @@ import java.util.List;
  */
 class XMLParser {
 
-    static Terminal Parse() throws ParserConfigurationException, IOException, SAXException {
-        File file = new File("terminal.xml");
+    static Terminal Parse(String filePath) throws ParserConfigurationException, IOException, SAXException {
+        File file = new File(filePath);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -74,7 +74,7 @@ class XMLParser {
 
         NodeList transactionNodeList = doc.getElementsByTagName("transaction");
 
-        List<Transaction> transactions = new ArrayList<Transaction>();
+        List<Transaction> transactions = new ArrayList<>();
         for (int temp = 0; temp < transactionNodeList.getLength(); temp++) {
             Node transactionNode = transactionNodeList.item(temp);
             System.out.println("\nCurrent Element :" + transactionNode.getNodeName());
