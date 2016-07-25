@@ -49,10 +49,10 @@ class JsonParser {
                 deposits.add(deposit);
             }
 
-            String outlog = (String) jsonObject.get("outLog");
-            System.out.println("The outLog: " + outlog);
+            String outLog = (String) jsonObject.get("outLog");
+            System.out.println("The outLog: " + outLog);
 
-            serverData.setOutLog(outlog);
+            serverData.setOutLog(outLog);
             serverData.setDeposits(deposits);
 
         } catch (FileNotFoundException e) {

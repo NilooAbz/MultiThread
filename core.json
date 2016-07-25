@@ -1,10 +1,10 @@
 {
-  "port" : 8080,
+  "port" : 8081,
   "deposits":[
     {
       "customer":"Ali Alavi",
       "id":"33227781",
-      "initialBalance":"1000",
+      "initialBalance":"12000",
       "upperBound":"1000000"
     },
     {

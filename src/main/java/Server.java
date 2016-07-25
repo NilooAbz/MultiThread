@@ -5,7 +5,9 @@ import exceptions.InitialBalanceBecameZeroException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * Created by Niloofar on 7/20/2016.
@@ -16,7 +18,7 @@ public class Server implements Serializable ,Runnable {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private ServerData serverData;
-
+    Terminal terminal;
 
     public Server(ServerData serverData, Socket socket) {
         this.serverData = serverData;
@@ -26,13 +28,26 @@ public class Server implements Serializable ,Runnable {
     public Server() {
     }
 
+
+    Logger serverOutLog = Logger.getLogger("serverOutLog");
+
     public static void main(String[] args) throws IOException {
 
         ServerData serverData = JsonParser.parse();
 
+        Logger serverOutLog = Logger.getLogger("serverOutLog");
+        System.out.println(serverData);
+        System.out.println(serverData.getOutLog());
+        FileHandler fileHandler = new FileHandler(serverData.getOutLog());
+        serverOutLog.addHandler(fileHandler);
+        SimpleFormatter formatter = new SimpleFormatter();
+        fileHandler.setFormatter(formatter);
+        serverOutLog.info("Start logging");
+
         ServerSocket serverSocket = new ServerSocket(serverData.getPort());
         while(true) {
-            System.out.println("Waiting for socket");
+            serverOutLog.info("Waiting for socket");
+            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
             Socket socket = serverSocket.accept();
 //            server.setSocket(socket);
             new Thread( new Server(serverData , socket)).start();
@@ -50,45 +65,62 @@ public class Server implements Serializable ,Runnable {
 
     public void run() {
         try {
-            System.out.println("Connection received from " + socket.getInetAddress().getHostName());
+            serverOutLog.info("Connection received from " + socket.getInetAddress().getHostAddress());
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
             while (true) {
                 try {
-                    System.out.println("wait for data");
+                    serverOutLog.info("wait for data");
                     Transaction transaction = (Transaction) in.readObject();
 
-                    System.out.println("client>" + transaction.getTransactionType());
+                    serverOutLog.info("client transaction type is >" + transaction.getTransactionType());
+                    //terminal.terminalOutLog.info("declare the type");
+                    serverOutLog.info("client transaction deposit is >" + transaction.getDeposit());
 
-                    System.out.println("client>" + transaction.getDeposit());
+                    serverOutLog.info("client transaction amount is >" + transaction.getTransactionAmount());
 
-                    System.out.println("client>" + transaction.getTransactionAmount());
-
-                    System.out.println("client>" + transaction.getTransactionId());
+                    serverOutLog.info("client transaction id is >" + transaction.getTransactionId());
 
                     boolean findDeposit = false;
                     try{
-
                         for (Deposit deposit : serverData.getDeposits()) {
                             if (transaction.getDeposit().equals(deposit.getId())) {
                                 if (transaction.getTransactionType().equals("deposit")) {
                                     deposit.depositVerb(transaction.getTransactionAmount());
+                                    serverOutLog.info("Terminal with deposit number " + transaction.getDeposit() + "is requesting for deposit");
                                 }//deposit = withdraw
                                 else {
                                     deposit.withdraw(transaction.getTransactionAmount());
+                                    serverOutLog.info("Terminal with deposit number " + transaction.getDeposit() + "is requesting for withdraw");
+                                    out.writeObject("Terminal with deposit number " + transaction.getDeposit());
+//                                    +"and terminal id "+
+//                                            terminal.getId() + "is requesting for withdraw");
                                 }
                                 findDeposit = true;
-                                out.writeObject("Transaction done");
+                                out.writeObject("transaction done.\n " + "Now initial value for deposit number " + transaction.getDeposit()+
+                                        "is: " + deposit.getInitialBalance());
+                                serverOutLog.info("Transaction done");
                                 break;
                             }
                         }
                         if (!findDeposit) {
-                            System.out.println("deposit ID's is not matched");
+                            //System.out.println("deposit ID's is not matched");
+                            serverOutLog.info("deposit ID's is not matched");
 
                         }
-                    }catch (DepositNotExistException | InitialBalancePassedUpperBoundException | InitialBalanceBecameZeroException e){
+                    } catch (DepositNotExistException e){
                         out.writeObject(e.getMessage());
+                        //terminal.terminalOutLog.info(e.getMessage());
+                        serverOutLog.info(e.getMessage());
+                    } catch (InitialBalancePassedUpperBoundException e){
+                        out.writeObject(e.getMessage());
+                        //terminal.terminalOutLog.info(e.getMessage());
+                        serverOutLog.info(e.getMessage());
+                    } catch (InitialBalanceBecameZeroException e){
+                        out.writeObject(e.getMessage());
+                        //terminal.terminalOutLog.info(e.getMessage());
+                        serverOutLog.info(e.getMessage());
                     }
 
                     if (transaction.getTransactionType().equals("")) {
@@ -106,17 +138,6 @@ public class Server implements Serializable ,Runnable {
                 }
             }
 
-            /*try (ObjectInputStream in = new ObjectInputStream(socket.getInputStream())){
-                System.out.println("wait for data");
-                Transaction transaction = (Transaction) in.readObject();
-
-                System.out.println("client>" + transaction.getTransactionType());
-                out.writeObject("get the type");
-
-            }catch (IOException e){
-                e.printStackTrace();
-            }*/
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -128,7 +149,6 @@ public class Server implements Serializable ,Runnable {
                 e.printStackTrace();
             }
         }
+        return;
     }
-
-
 }

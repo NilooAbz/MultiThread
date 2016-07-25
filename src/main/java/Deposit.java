@@ -31,6 +31,7 @@ class Deposit {
     void setInitialBalance(BigDecimal initialBalance) {
         this.initialBalance = initialBalance;
     }
+    public BigDecimal getInitialBalance() {return initialBalance;}
 
     void setUpperBound(BigDecimal upperBound) {
         this.upperBound = upperBound;
@@ -74,5 +75,6 @@ class Deposit {
         }
         System.out.println(initialBalance);
     }
+
 
 }

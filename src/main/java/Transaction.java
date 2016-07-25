@@ -4,43 +4,43 @@ import java.math.BigDecimal;
 /**
  * Created by Niloofar on 7/20/2016.
  */
-public class Transaction implements Serializable{
+class Transaction implements Serializable{
 
-    private Integer transactionId;
+    private String transactionId;
     private String transactionType;
     private BigDecimal transactionAmount;
     private String deposit;
 
 
-    public Integer getTransactionId() {
+    String getTransactionId() {
         return transactionId;
     }
 
-    public void setTransactionId(Integer transactionId) {
+    void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
 
-    public String getTransactionType() {
+    String getTransactionType() {
         return transactionType;
     }
 
-    public void setTransactionType(String transactionType) {
+    void setTransactionType(String transactionType) {
         this.transactionType = transactionType;
     }
 
-    public BigDecimal getTransactionAmount() {
+    BigDecimal getTransactionAmount() {
         return transactionAmount;
     }
 
-    public void setTransactionAmount(BigDecimal transactionAmount) {
+    void setTransactionAmount(BigDecimal transactionAmount) {
         this.transactionAmount = transactionAmount;
     }
 
-    public String getDeposit() {
+    String getDeposit() {
         return deposit;
     }
 
-    public void setDeposit(String deposit) {
+    void setDeposit(String deposit) {
         this.deposit = deposit;
     }
 }

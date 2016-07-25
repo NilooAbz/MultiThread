@@ -7,7 +7,9 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -74,13 +76,13 @@ class XMLParser {
 
         NodeList transactionNodeList = doc.getElementsByTagName("transaction");
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<Transaction> transactions = new ArrayList<Transaction>();
         for (int temp = 0; temp < transactionNodeList.getLength(); temp++) {
             Node transactionNode = transactionNodeList.item(temp);
             System.out.println("\nCurrent Element :" + transactionNode.getNodeName());
             if (transactionNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element transactionElement = (Element) transactionNode;
-                Integer id = Integer.parseInt(transactionElement.getAttribute("id"));
+                String id = transactionElement.getAttribute("id");
                 System.out.println(id);
                 String type = transactionElement.getAttribute("type");
                 System.out.println(type);
@@ -101,5 +103,8 @@ class XMLParser {
         }
         terminal.setTransactions(transactions);
         return terminal;
+
+
     }
+
 }
