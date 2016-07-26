@@ -1,6 +1,6 @@
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.w3c.dom.Attr;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -8,47 +8,69 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
+
 
 /**
  * Created by DotinSchool2 on 7/25/2016.
  */
+
 public class ResponseToTerminal {
 
-    String filePath;
 
-    public ResponseToTerminal(String filePath) {
-        this.filePath = filePath;
-    }
+    //public void saveXML(String terminalId, String transactionId, String messageResponse) throws ParserConfigurationException, TransformerException {
+    public ResponseToTerminal(String terminalId, String transactionId, String messageResponse) throws ParserConfigurationException, TransformerException {
+
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+        // root elements
+        Document document = docBuilder.newDocument();
+        Element rootElement = document.createElement("Response");
+        document.appendChild(rootElement);
+
+        /*// staff elements
+        Element staff = doc.createElement("Staff");
+        rootElement.appendChild(staff);
+
+        // set attribute to staff element
+        Attr attr = doc.createAttribute("id");
+        attr.setValue("1");
+        staff.setAttributeNode(attr);*/
 
 
-    public void saveToXML(Transaction transaction , String message, String id){
 
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.newDocument();
+        // TerminalId elements
+        Element terminal = document.createElement("Terminal");
+        rootElement.appendChild(terminal);
 
-            Node rootNode = document.getFirstChild();
-            Element element = document.createElement("response");
-            element.setAttribute("id" , transaction.getTransactionId());
-            element.setAttribute("responseMessage" , message);
-            rootNode.appendChild(element);
+        Attr attr = document.createAttribute("id");
+        attr.setValue(terminalId);
+        terminal.setAttributeNode(attr);
 
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
+        // transactionId elements
+        Element transaction = document.createElement("transactionId");
+        transaction.appendChild(document.createTextNode(transactionId));
+        terminal.appendChild(transaction);
 
-            DOMSource source = new DOMSource(document);
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            StreamResult result = new StreamResult(new File(filePath));
-            transformer.transform(source, result);
+        // message elements
+        Element message = document.createElement("message");
+        message.appendChild(document.createTextNode(messageResponse));
+        terminal.appendChild(message);
 
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+        // write the content into xml file
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource source = new DOMSource(document);
+        StreamResult result = new StreamResult(new File("response.xml"));
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        // Output to console for testing
+        // StreamResult result = new StreamResult(System.out);
+
+        transformer.transform(source, result);
+
+        System.out.println("File saved!");
+
     }
 }

@@ -38,7 +38,7 @@ class XMLParser {
         System.out.println("\nCurrent Element :" + terminalNode.getNodeName());
         if (terminalNode.getNodeType() == Node.ELEMENT_NODE) {
             Element terminalElement = (Element) terminalNode;
-            Integer id = Integer.parseInt(terminalElement.getAttribute("id"));
+            String id = terminalElement.getAttribute("id");
             System.out.println(id);
             String type = terminalElement.getAttribute("type");
             System.out.println(type);
@@ -92,11 +92,16 @@ class XMLParser {
                 System.out.println(deposit);
 
                 Transaction transaction = new Transaction();
+                //ResponseTransaction responseTransaction = new ResponseTransaction();
 
                 transaction.setTransactionId(id);
+                //responseTransaction.setTransactionId();
                 transaction.setTransactionType(type);
                 transaction.setTransactionAmount(amount);
                 transaction.setDeposit(deposit);
+
+
+
 
                 transactions.add(transaction);
             }

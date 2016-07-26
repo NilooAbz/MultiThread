@@ -25,17 +25,14 @@ public class Server implements Serializable ,Runnable {
         this.socket = socket;
     }
 
-    public Server() {
-    }
+    public Server() {}
 
-
-    Logger serverOutLog = Logger.getLogger("serverOutLog");
+    private static Logger serverOutLog = Logger.getLogger("serverOutLog");
 
     public static void main(String[] args) throws IOException {
 
         ServerData serverData = JsonParser.parse();
 
-        Logger serverOutLog = Logger.getLogger("serverOutLog");
         System.out.println(serverData);
         System.out.println(serverData.getOutLog());
         FileHandler fileHandler = new FileHandler(serverData.getOutLog());
@@ -75,7 +72,7 @@ public class Server implements Serializable ,Runnable {
                     Transaction transaction = (Transaction) in.readObject();
 
                     serverOutLog.info("client transaction type is >" + transaction.getTransactionType());
-                    //terminal.terminalOutLog.info("declare the type");
+
                     serverOutLog.info("client transaction deposit is >" + transaction.getDeposit());
 
                     serverOutLog.info("client transaction amount is >" + transaction.getTransactionAmount());

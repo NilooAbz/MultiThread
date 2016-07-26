@@ -11,7 +11,6 @@ class Transaction implements Serializable{
     private BigDecimal transactionAmount;
     private String deposit;
 
-
     String getTransactionId() {
         return transactionId;
     }

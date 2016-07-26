@@ -1,12 +1,13 @@
 import org.xml.sax.SAXException;
 
-import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -17,24 +18,25 @@ import java.util.logging.SimpleFormatter;
  */
 public class Terminal extends Thread implements Serializable{
 
-    private Integer terminalId;
+    private String terminalId;
     private String terminalType;
     private String serverIP;
     private Integer serverPort;
     private String path;
     private List<Transaction> transactions;
-    ResponseToTerminal response;
+    private ResponseToTerminal response;
 
-    Logger terminalOutLog  = Logger.getLogger("terminalLog");
+    private static Logger terminalOutLog  = Logger.getLogger("terminalOutLog");
+
+    static Terminal terminal;
     public static void main(String[] args) {
-        String filePath =args[0];
+        String filePath = args[0];
         System.out.println("##################################"+filePath);
 
-        Terminal terminal;
+
         try {
             terminal = XMLParser.Parse(filePath);
-            terminal.setResponse(new ResponseToTerminal(filePath));
-            Logger terminalOutLog = Logger.getLogger("terminalOutLog");
+            //terminal.setResponse(new ResponseToTerminal("response.xml"));
             FileHandler fileHandler = new FileHandler(terminal.getPath());
             terminalOutLog.addHandler(fileHandler);
             SimpleFormatter formatter = new SimpleFormatter();
@@ -52,6 +54,7 @@ public class Terminal extends Thread implements Serializable{
     }
 
 
+
     public List<Transaction> getTransactions() {
         return transactions;
     }
@@ -60,11 +63,11 @@ public class Terminal extends Thread implements Serializable{
         this.transactions = transactions;
     }
 
-    public Integer getTerminalId() {
+    public String getTerminalId() {
         return terminalId;
     }
 
-    public void setTerminalId(Integer terminalId) {
+    public void setTerminalId(String terminalId) {
         this.terminalId = terminalId;
     }
 
@@ -117,25 +120,30 @@ public class Terminal extends Thread implements Serializable{
             ObjectOutputStream outToServer = new ObjectOutputStream(client.getOutputStream());
             outToServer.flush();
             try {
+
+                //Object message = new ArrayList<>();
                 for (Transaction transaction : transactions) {
                     outToServer.writeObject(transaction);
                     String message = inFromServer.readObject().toString();
-                    response.saveToXML(transaction , message,transaction.getTransactionId());
+                    new ResponseToTerminal(getTerminalId(), transaction.getTransactionId(), message );
+//                    response.saveXML(getTerminalId(), transaction.getTransactionId(), message );
                     terminalOutLog.info("server>" + message);
-
-
                 }
+                //new ResponseToTerminal(getTerminalId(), transaction.getTransactionId(), message );
+
                 inFromServer.close();
                 outToServer.close();
                 client.close();
 
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (TransformerException e) {
+                e.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
 }
