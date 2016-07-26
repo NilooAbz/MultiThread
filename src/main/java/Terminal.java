@@ -125,11 +125,11 @@ public class Terminal extends Thread implements Serializable{
                 for (Transaction transaction : transactions) {
                     outToServer.writeObject(transaction);
                     String message = inFromServer.readObject().toString();
-                    new ResponseToTerminal(getTerminalId(), transaction.getTransactionId(), message );
-//                    response.saveXML(getTerminalId(), transaction.getTransactionId(), message );
+                    //new ResponseToTerminal(getTerminalId(), transaction.getTransactionId(), message );
                     terminalOutLog.info("server>" + message);
+                    response.saveXML(getTerminalId(), transaction.getTransactionId(), message );
                 }
-                //new ResponseToTerminal(getTerminalId(), transaction.getTransactionId(), message );
+                //response.saveXML(getTerminalId(), transaction.getTransactionId(), message );
 
                 inFromServer.close();
                 outToServer.close();
@@ -140,6 +140,8 @@ public class Terminal extends Thread implements Serializable{
             } catch (ParserConfigurationException e) {
                 e.printStackTrace();
             } catch (TransformerException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
                 e.printStackTrace();
             }
         } catch (IOException e) {
