@@ -30,17 +30,6 @@ public class ResponseToTerminal {
         Element rootElement = document.createElement("Response");
         document.appendChild(rootElement);
 
-        /*// staff elements
-        Element staff = doc.createElement("Staff");
-        rootElement.appendChild(staff);
-
-        // set attribute to staff element
-        Attr attr = doc.createAttribute("id");
-        attr.setValue("1");
-        staff.setAttributeNode(attr);*/
-
-
-
         // TerminalId elements
         Element terminal = document.createElement("Terminal");
         rootElement.appendChild(terminal);
