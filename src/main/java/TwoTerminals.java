@@ -7,10 +7,11 @@ public class TwoTerminals {
             @Override
             public void run() {
                 Terminal.main(new String[]{"terminal1.xml"});
+                Terminal.main(new String[] {"terminal2.xml"});
             }
         }).start();
 
-        Terminal.main(new String[] {"terminal2.xml"});
+        //Terminal.main(new String[] {"terminal2.xml"});
     }
 
 
